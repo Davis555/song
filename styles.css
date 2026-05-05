@@ -93,14 +93,17 @@ body {
 }
 .song-item:hover { color:#fff; }
 
-.middle-lyrics {
-  flex:1;
-  padding:40px 20px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:20px;
-  background:#111;
+.song-bg-lyrics {
+  position:absolute;
+  bottom: 0 !important;   /* 强制贴背景图底部 */
+  left: 0 !important;
+  width:100% !important;
+  padding:20px !important;
+  text-align:center !important;
+  color:#fff !important;
+  background:linear-gradient(transparent,rgba(0,0,0,0.8)) !important;
+  font-size:28px !important;
+  z-index: 5 !important;  /* 低于黑胶，不遮挡 */
 }
 .song-bg {
   width:100%;
@@ -265,9 +268,9 @@ body {
   background-position: center !important;
   background-repeat: no-repeat !important;
 }
-/* 歌曲专属黑胶LOGO —— 只有 An Other Way 播放时显示 */
+/* 黑胶：歌曲背景正中心 + 在字幕上方 */
 .vinyl-disc {
-  display: none; /* 默认隐藏 */
+  display: none;
   position: absolute;
   width: 120px;
   height: 120px;
@@ -277,15 +280,12 @@ body {
   border-radius: 50%;
   background-size: cover;
   background-position: center;
-  z-index: 10;
+  z-index: 10; /* 黑胶在字幕上面！！！ */
 }
-
-/* 旋转动画 */
 .vinyl-disc.playing {
   display: block;
   animation: vinylRotate 8s linear infinite;
 }
-
 @keyframes vinylRotate {
   from { transform: translate(-50%, -50%) rotate(0deg); }
   to   { transform: translate(-50%, -50%) rotate(360deg); }
