@@ -1,7 +1,7 @@
 const audio = document.getElementById('audio');
 const songBg = document.getElementById('songBg');
 const lyricsText = document.getElementById('lyricsText');
-const bgLyrics = document.getElementById('bgLyrics');
+const bgLyrics = document.getElementById('songBgLyrics');
 const playBtn = document.getElementById('playBtn');
 const prevBtn = document.getElementById('prevBtn');
 const nextBtn = document.getElementById('nextBtn');
@@ -12,7 +12,6 @@ const volumeText = document.getElementById('volumeText');
 const downloadBtn = document.getElementById('downloadBtn');
 const albumWrap = document.getElementById('albumWrap');
 
-// 数据：只加了 logo，其他和你原来一模一样
 const MUSIC_DATA = {
   albums: [
     {
@@ -45,7 +44,6 @@ const MUSIC_DATA = {
 };
 
 let allSongs = [];
-let currentIndex = 0;
 let lyrics = [];
 
 function parseSRT(text) {
@@ -76,7 +74,6 @@ function syncLyrics() {
   bgLyrics.innerText = showText;
 }
 
-// 渲染歌单（和你原来完全一样，没动）
 function renderDesktopAlbums(){
   albumWrap.innerHTML = '';
   const root = document.createElement('div');
@@ -108,7 +105,6 @@ function renderDesktopAlbums(){
   });
 }
 
-// 播放歌曲：加了黑胶切换，别的不动
 async function playSong(song) {
   songBg.style.backgroundImage = `url(${song.bg})`;
   bgLyrics.innerText = '';
@@ -130,7 +126,6 @@ async function playSong(song) {
   audio.play().catch(err=>console.log(err));
   playBtn.textContent = '⏸';
 
-  // 黑胶切换
   let vinyl = document.getElementById("vinylDisc");
   if(vinyl){
     vinyl.src = song.logo;
@@ -138,7 +133,6 @@ async function playSong(song) {
   }
 }
 
-// 播放/暂停
 playBtn.onclick = function(){
   if(audio.paused){
     audio.play();
@@ -153,7 +147,6 @@ playBtn.onclick = function(){
   }
 };
 
-// 时间更新
 audio.ontimeupdate = function(){
   if(!audio.duration) return;
   progress.value = audio.currentTime / audio.duration * 100;
@@ -161,8 +154,7 @@ audio.ontimeupdate = function(){
   let curS = Math.floor(audio.currentTime % 60);
   let durM = Math.floor(audio.duration / 60);
   let durS = Math.floor(audio.duration % 60);
-  timeText.textContent = 
-    `${String(curM).padStart(2,'0')}:${String(curS).padStart(2,'0')} / ${String(durM).padStart(2,'0')}:${String(durS).padStart(2,'0')}`;
+  timeText.textContent = `${String(curM).padStart(2,'0')}:${String(curS).padStart(2,'0')} / ${String(durM).padStart(2,'0')}:${String(durS).padStart(2,'0')}`;
   syncLyrics();
 };
 
@@ -183,8 +175,8 @@ downloadBtn.onclick = function(){
   a.click();
 };
 
-prevBtn.onclick = () => audio.currentTime = 0;
-nextBtn.onclick = () => audio.currentTime = 0;
+prevBtn.onclick = () => { audio.currentTime = 0; };
+nextBtn.onclick = () => { audio.currentTime = 0; };
 
 audio.onended = () => {
   playBtn.textContent = '▶';
@@ -192,7 +184,7 @@ audio.onended = () => {
   if(vinyl) vinyl.classList.remove("playing");
 };
 
-// 初始化：只留一次！
+// ↓↓↓↓ 只保留一次初始化，绝对不炸列表 ↓↓↓↓
 renderDesktopAlbums();
 volumeText.textContent = volume.value + '%';
 songBg.style.backgroundImage = "url('image/bg.png')";
