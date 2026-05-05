@@ -119,7 +119,6 @@ function renderDesktopAlbums(){
 async function playSong(song) {
   songBg.style.backgroundImage = `url(${song.bg})`;
   bgLyrics.innerText = '';
-  // 右侧创作背景显示歌曲故事
   lyricsText.innerText = song.story || "暂无创作故事";
 
   lyrics = [];
@@ -132,6 +131,23 @@ async function playSong(song) {
       console.log("歌词加载失败",e);
     }
   }
+
+  audio.src = song.url;
+  await audio.load();
+  audio.play().catch(err=>console.log(err));
+  playBtn.textContent = '⏸';
+
+  // ==============================
+  // 只给 An Other Way 显示黑胶LOGO
+  // ==============================
+  let vinyl = document.getElementById("vinylDisc");
+  if (song.title === "An Other Way") {
+    vinyl.style.backgroundImage = "url(image/AnOtherWay_logo.png)";
+    vinyl.classList.add("playing");
+  } else {
+    vinyl.classList.remove("playing");
+  }
+}
 
   audio.src = song.url;
   await audio.load();
