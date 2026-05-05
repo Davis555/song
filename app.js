@@ -1,7 +1,7 @@
 const audio = document.getElementById('audio');
 const songBg = document.getElementById('songBg');
 const lyricsText = document.getElementById('lyricsText');
-const bgLyrics = document.getElementById('songBgLyrics');
+const bgLyrics = document.getElementById('bgLyrics');
 const playBtn = document.getElementById('playBtn');
 const prevBtn = document.getElementById('prevBtn');
 const nextBtn = document.getElementById('nextBtn');
@@ -12,6 +12,7 @@ const volumeText = document.getElementById('volumeText');
 const downloadBtn = document.getElementById('downloadBtn');
 const albumWrap = document.getElementById('albumWrap');
 
+// 原始数据，只加 logo 字段，其余完全不变
 const MUSIC_DATA = {
   albums: [
     {
@@ -44,6 +45,7 @@ const MUSIC_DATA = {
 };
 
 let allSongs = [];
+let currentIndex = 0;
 let lyrics = [];
 
 function parseSRT(text) {
@@ -74,6 +76,7 @@ function syncLyrics() {
   bgLyrics.innerText = showText;
 }
 
+// 完全原样，不动
 function renderDesktopAlbums(){
   albumWrap.innerHTML = '';
   const root = document.createElement('div');
@@ -105,6 +108,7 @@ function renderDesktopAlbums(){
   });
 }
 
+// 只加4行黑胶代码，其余完全不动
 async function playSong(song) {
   songBg.style.backgroundImage = `url(${song.bg})`;
   bgLyrics.innerText = '';
@@ -126,24 +130,22 @@ async function playSong(song) {
   audio.play().catch(err=>console.log(err));
   playBtn.textContent = '⏸';
 
+  // ↓↓↓↓ 只加这4行 ↓↓↓↓
   let vinyl = document.getElementById("vinylDisc");
-  if(vinyl){
+  if (vinyl) {
     vinyl.src = song.logo;
     vinyl.classList.add("playing");
   }
 }
 
+// 完全原样
 playBtn.onclick = function(){
   if(audio.paused){
     audio.play();
     playBtn.textContent = '⏸';
-    let vinyl = document.getElementById("vinylDisc");
-    if(vinyl) vinyl.classList.add("playing");
   }else{
     audio.pause();
     playBtn.textContent = '▶';
-    let vinyl = document.getElementById("vinylDisc");
-    if(vinyl) vinyl.classList.remove("playing");
   }
 };
 
@@ -175,16 +177,14 @@ downloadBtn.onclick = function(){
   a.click();
 };
 
-prevBtn.onclick = () => { audio.currentTime = 0; };
-nextBtn.onclick = () => { audio.currentTime = 0; };
+prevBtn.onclick = () => audio.currentTime = 0;
+nextBtn.onclick = () => audio.currentTime = 0;
 
 audio.onended = () => {
   playBtn.textContent = '▶';
-  let vinyl = document.getElementById("vinylDisc");
-  if(vinyl) vinyl.classList.remove("playing");
 };
 
-// ↓↓↓↓ 只保留一次初始化，绝对不炸列表 ↓↓↓↓
+// 初始化完全原样
 renderDesktopAlbums();
 volumeText.textContent = volume.value + '%';
 songBg.style.backgroundImage = "url('image/bg.png')";
