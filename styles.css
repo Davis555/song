@@ -46,12 +46,24 @@ body {
   gap:12px;
   margin-bottom:30px;
 }
-.logo img { border-radius:50%; }
-.logo span { font-size:20px; font-weight:bold; color:#fff; }
-.album-wrap {
-  display:flex;
-  flex-direction:column;
-  gap:14px;
+.logo-top img {
+  width: 53px !important;
+  height: 53px !important;
+  border-radius: 50% !important;
+  object-fit: cover !important;
+  border: 2px solid #ffffff !important;
+  margin-right: 10px; /* 和文字拉开一点距离 */
+}
+
+.logo-top {
+  position: absolute !important;
+  left: 20px !important; /* 从50px改成20px，不那么靠左 */
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  z-index: 99 !important;
 }
 .album-title {
   font-size:16px;
