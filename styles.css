@@ -114,14 +114,15 @@ body {
 }
 .song-bg-lyrics {
   position:absolute;
-  bottom:0;
-  left:0;
-  width:100%;
-  padding:20px;
-  text-align:center;
-  color:#fff;
-  background:linear-gradient(transparent,rgba(0,0,0,0.8));
-  font-size:28px;
+  bottom: 0 !important;   /* 强制贴背景图底部 */
+  left: 0 !important;
+  width:100% !important;
+  padding:20px !important;
+  text-align:center !important;
+  color:#fff !important;
+  background:linear-gradient(transparent,rgba(0,0,0,0.8)) !important;
+  font-size:28px !important;
+  z-index: 5 !important;  /* 低于黑胶，不遮挡 */
 }
 .lyrics-box {
   width:100%;
