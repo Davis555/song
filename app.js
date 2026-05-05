@@ -21,6 +21,7 @@ const MUSIC_DATA = {
         {
           title: "Rain Night",
           bg: "image/Cover2.png",
+          logo: "image/hdj.png",
           url: "audio/Rain Night.mp3",
           srt: "",
           story: "《Rain Night》创作于雨夜，氛围安静治愈。"
@@ -33,6 +34,7 @@ const MUSIC_DATA = {
         {
           title: "An Other Way",
           bg: "image/Cover1.png",
+          logo: "image/AnOtherWay_logo.png",
           url: "audio/An Other Way.mp3",
           srt: "lyric/AnOtherWay.srt",
           story: "讲述人生选择与自我坚持的创作理念。"
@@ -137,6 +139,13 @@ async function playSong(song) {
   await audio.load();
   audio.play().catch(err=>console.log(err));
   playBtn.textContent = '⏸';
+
+  // 黑胶LOGO自动切换 + 开始旋转
+  let vinyl = document.getElementById("vinylDisc");
+  if(vinyl) {
+    vinyl.src = song.logo;
+    vinyl.classList.add("playing");
+  }
 }
 
 // 播放暂停
@@ -144,9 +153,13 @@ playBtn.onclick = function(){
   if(audio.paused){
     audio.play();
     playBtn.textContent = '⏸';
+    let vinyl = document.getElementById("vinylDisc");
+    if(vinyl) vinyl.classList.add("playing");
   }else{
     audio.pause();
     playBtn.textContent = '▶';
+    let vinyl = document.getElementById("vinylDisc");
+    if(vinyl) vinyl.classList.remove("playing");
   }
 };
 
@@ -189,7 +202,12 @@ downloadBtn.onclick = function(){
 
 prevBtn.onclick = () => audio.currentTime = 0;
 nextBtn.onclick = () => audio.currentTime = 0;
-audio.onended = () => playBtn.textContent = '▶';
+
+audio.onended = () => {
+  playBtn.textContent = '▶';
+  let vinyl = document.getElementById("vinylDisc");
+  if(vinyl) vinyl.classList.remove("playing");
+};
 
 // 初始化
 renderDesktopAlbums();
@@ -197,6 +215,3 @@ volumeText.textContent = volume.value + '%';
 
 // 默认显示背景图
 songBg.style.backgroundImage = "url('image/bg.png')";
-
-renderDesktopAlbums();
-volumeText.textContent = volume.value + '%';
