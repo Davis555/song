@@ -1,159 +1,206 @@
-const audio = new Audio();
-const songBg = document.getElementById('songBg');
-const lyricsText = document.getElementById('lyricsText');
-const bgLyrics = document.getElementById('songBgLyrics');
-const playBtn = document.getElementById('playBtn');
-const prevBtn = document.getElementById('prevBtn');
-const nextBtn = document.getElementById('nextBtn');
-const progress = document.getElementById('progress');
-const timeText = document.getElementById('timeText');
-const volume = document.getElementById('volume');
-const volumeText = document.getElementById('volumeText');
-const downloadBtn = document.getElementById('downloadBtn');
-const albumWrap = document.getElementById('albumWrap');
-
-const MUSIC_DATA = {
-  albums: [
-    {
-      name: "Instrument",
-      songs: [
-        {
-          title: "Rain Night",
-          bg: "image/Cover2.png",
-          url: "audio/Rain Night.mp3",
-          srt: "",
-          story: "《Rain Night》创作于雨夜，氛围安静治愈。"
-        }
-      ]
-    },
-    {
-      name: "POP Song",
-      songs: [
-        {
-          title: "An Other Way",
-          bg: "image/Cover1.png",
-          url: "audio/An Other Way.mp3",
-          srt: "lyric/AnOtherWay.srt",
-          story: "讲述人生选择与自我坚持的创作理念。"
-        }
-      ]
-    }
-  ]
-};
-
-let allSongs = [];
-let lyrics = [];
-
-function parseSRT(text) {
-  const lines = text.trim().split('\n');
-  let res = [];
-  for(let i=0;i<lines.length;i++){
-    let line = lines[i].trim();
-    if(!line.match(/\d{2}:\d{2}:\d{2}/)) continue;
-    let timeReg = /(\d{2}):(\d{2}):(\d{2}),(\d{3})/;
-    let match = line.match(timeReg);
-    if(!match) continue;
-    let start = Number(match[1])*3600 + Number(match[2])*60 + Number(match[3]) + Number(match[4])/1000;
-    let lyric = '';
-    if(i+1<lines.length) lyric = lines[++i].trim();
-    res.push({start, text: lyric});
-  }
-  return res;
+* {
+  margin:0; padding:0; box-sizing:border-box;
+}
+body {
+  background:#111; color:#fff; font-family:Arial,"Microsoft YaHei";
 }
 
-function syncLyrics() {
-  let now = audio.currentTime;
-  let txt = "";
-  for(let i=0;i<lyrics.length;i++){
-    if(now >= lyrics[i].start) txt = lyrics[i].text;
-  }
-  bgLyrics.innerText = txt;
+/* 顶部栏 */
+.top-full-banner {
+  width:100%;
+  height:120px;
+  background-image: url("image/top.png");
+  background-size:cover;
+  background-position:center;
+  position: relative;
 }
 
-function renderDesktopAlbums(){
-  albumWrap.innerHTML = '';
-  MUSIC_DATA.albums.forEach(al=>{
-    let wrap = document.createElement('div');
-    let titleDom = document.createElement('div');
-    titleDom.className = 'album-title';
-    titleDom.textContent = al.name;
-    wrap.appendChild(titleDom);
-
-    let listDom = document.createElement('div');
-    listDom.className = 'song-list';
-
-    al.songs.forEach(s=>{
-      let item = document.createElement('div');
-      item.className = 'song-item';
-      item.textContent = s.title;
-      item.onclick = ()=>playSong(s);
-      listDom.appendChild(item);
-      allSongs.push(s);
-    });
-    wrap.appendChild(listDom);
-    albumWrap.appendChild(wrap);
-  });
+/* 左上角LOGO —— 圆形 + 位置优化 */
+.logo-top {
+  position: absolute;
+  left: 25px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 99;
+}
+.logo-top img {
+  width: 53px;
+  height: 53px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+}
+.logo-top span {
+  font-size: 22px;
+  font-weight:bold;
+  text-shadow: 0 0 6px #000;
 }
 
-async function playSong(song) {
-  songBg.style.backgroundImage = `url(${song.bg})`;
-  bgLyrics.innerText = '';
-  lyricsText.innerText = song.story || '';
-  lyrics = [];
-
-  if(song.srt){
-    try {
-      let r = await fetch(song.srt);
-      let t = await r.text();
-      lyrics = parseSRT(t);
-    } catch(e) {}
-  }
-
-  audio.src = song.url;
-  await audio.load();
-  audio.play();
-  playBtn.textContent = '⏸';
+/* 手机端隐藏 */
+.mobile-top-menu,
+.album-scroll-wrap,
+.song-list-panel,
+.m-panel {
+  display: none !important;
 }
 
-playBtn.onclick = () => {
-  if(audio.paused){
-    audio.play();
-    playBtn.textContent = '⏸';
-  } else {
-    audio.pause();
-    playBtn.textContent = '▶';
-  }
-};
+/* 布局 */
+.page-wrap {
+  display: flex;
+  width:100%;
+  min-height: calc(100vh - 120px);
+}
+.left-side {
+  width:260px;
+  background:#181818;
+  padding:20px;
+}
+.album-wrap {
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+.album-title {
+  font-size:16px;
+  color:#eee;
+  font-weight:bold;
+  margin-top:10px;
+}
+.song-list {
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  padding-left:12px;
+}
+.song-item {
+  color:#ccc;
+  cursor:pointer;
+}
+.song-item:hover { color:#fff; }
 
-audio.ontimeupdate = () => {
-  if(!audio.duration) return;
-  progress.value = audio.currentTime / audio.duration * 100;
-  let cm = Math.floor(audio.currentTime/60), cs = Math.floor(audio.currentTime%60);
-  let dm = Math.floor(audio.duration/60), ds = Math.floor(audio.duration%60);
-  timeText.textContent = `${String(cm).padStart(2,'0')}:${String(cs).padStart(2,'0')} / ${String(dm).padStart(2,'0')}:${String(ds).padStart(2,'0')}`;
-  syncLyrics();
-};
+.middle-lyrics {
+  flex:1;
+  padding:40px 20px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:20px;
+  background:#111;
+}
+.song-bg {
+  width:100%;
+  max-width:1000px;
+  aspect-ratio:16/9;
+  background-size:cover;
+  background-position:center;
+  border-radius:12px;
+  position:relative;
+  background:#222;
+}
+.song-bg-lyrics {
+  position:absolute;
+  bottom:0; left:0;
+  width:100%;
+  padding:20px;
+  text-align:center;
+  color:#fff;
+  background:linear-gradient(transparent, rgba(0,0,0,0.7));
+  font-size:28px;
+}
 
-progress.oninput = () => {
-  if(audio.duration) audio.currentTime = progress.value / 100 * audio.duration;
-};
+/* ========= 中间黑胶LOGO —— 头像 2 倍大 + 正中间 ========= */
+.vinyl-disc {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 0 25px rgba(0,0,0,0.7);
+  border: 2px solid rgba(255,255,255,0.15);
+  z-index: 10;
+  animation: vinylRotate 20s linear infinite;
+  animation-play-state: paused;
+  pointer-events: none;
+}
+@keyframes vinylRotate {
+  0%   { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+.vinyl-disc.playing {
+  animation-play-state: running;
+}
 
-volume.oninput = () => {
-  audio.volume = volume.value / 100;
-  volumeText.textContent = volume.value + '%';
-};
+.lyrics-box {
+  width:100%;
+  max-width:1000px;
+  min-height:100px;
+  background:#1a1a1a;
+  border-radius:12px;
+  padding:20px;
+}
+.lyrics-text {
+  font-size:20px;
+  line-height:1.8;
+  color:#eee;
+}
+.player-bar {
+  width:100%;
+  max-width:1000px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  background:#1a1a1a;
+  padding:14px 20px;
+  border-radius:12px;
+  flex-wrap:wrap;
+}
+.btn {
+  width:36px; height:36px;
+  border-radius:50%;
+  border:none;
+  background:#333;
+  color:#fff;
+  cursor:pointer;
+}
+.progress {
+  flex:1; height:6px;
+}
+.time { color:#ccc; }
+.download-btn {
+  padding:6px 12px;
+  background:#07c;
+  color:#fff;
+  border:none;
+  border-radius:6px;
+  cursor:pointer;
+}
+.volume-group {
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.right-side {
+  width:280px;
+  background:#181818;
+  padding:30px 20px;
+  display:flex;
+  flex-direction:column;
+  gap:24px;
+}
+.right-card {
+  background:#222;
+  padding:16px;
+  border-radius:10px;
+}
+.right-card h3 { margin-bottom:10px; color:#fff; }
+.right-card p { color:#ccc; line-height:1.6; }
 
-downloadBtn.onclick = () => {
-  let a = document.createElement('a');
-  a.href = audio.src;
-  a.download = "song.mp3";
-  a.click();
-};
-
-prevBtn.onclick = () => { audio.currentTime = 0; };
-nextBtn.onclick = () => { audio.currentTime = 0; };
-audio.onended = () => { playBtn.textContent = '▶'; };
-
-renderDesktopAlbums();
-volumeText.textContent = volume.value + '%';
-songBg.style.backgroundImage = "url('image/bg.png')";
+@media (max-width:900px) {
+  .page-wrap,.left-side,.right-side { display:none !important; }
+}
