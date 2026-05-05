@@ -12,6 +12,7 @@ body {
   background-image: url("image/top.png");
   background-size:cover;
   background-position:center;
+  position: relative;
 }
 
 /* 手机元素默认隐藏 */
@@ -46,12 +47,13 @@ body {
   gap:12px;
   margin-bottom:30px;
 }
-/* 顶部 LOGO：居中 + 圆形 */
+
+/* ========== 正确的左上角圆形LOGO ========== */
 .logo-top {
   position: absolute;
-  left: 50%;         /* 水平居中 */
-  top: 50%;          /* 垂直居中 */
-  transform: translate(-50%, -50%); /* 完全居中 */
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
   display: flex;
   align-items: center;
   gap: 10px;
@@ -60,10 +62,17 @@ body {
 .logo-top img {
   width: 53px;
   height: 53px;
-  border-radius: 50%;  /* 保留圆形 */
+  border-radius: 50%;
   object-fit: cover;
   border: 2px solid #fff;
 }
+.logo-top span {
+  font-size: 22px;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 0 0 6px #000;
+}
+
 .album-title {
   font-size:16px;
   color:#eee;
@@ -167,7 +176,7 @@ body {
   gap:8px;
 }
 
-/* 右侧栏 + 感谢支持 完全恢复 */
+/* 右侧栏 */
 .right-side {
   width:280px;
   background:#181818;
@@ -194,7 +203,7 @@ body {
 }
 
 /* ============================================== */
-/* ========= 手机端（不影响电脑）============= */
+/* ========= 手机端 ============= */
 /* ============================================== */
 @media (max-width:900px) {
   .page-wrap,
@@ -246,71 +255,12 @@ body {
     width: 100% !important;
     z-index: 999 !important;
     border-radius: 0 !important;
-}
-/* 板块标题：关于作者、最新动态 */
-.right-card h3 {
-  font-size: 18px;
+  }
 }
 
-/* 正文内容 */
-.right-card p {
-  font-size: 16px;
-}
-
-/* 底部感谢支持小字 */
-.right-footer p {
-  font-size: 14px;
-}
+/* 背景图铺满 */
 #songBg {
-  background-size: 100% 100% !important;  /* 强制宽高100%拉伸，铺满整个容器 */
+  background-size: cover !important;
   background-position: center !important;
   background-repeat: no-repeat !important;
-  background-attachment: fixed !important; /* 防止滚动偏移 */
-}
-/* 给顶部背景图加定位，让LOGO能悬浮 */
-.top-full-banner {
-  position: relative !important; /* 必须加，否则LOGO定位失效 */
-}
-
-/* LOGO+文字悬浮在背景图左上角 */
-.logo-top {
-  position: absolute !important;
-  left: 20px !important; /* 距离背景图左边20px，可按需改 */
-  top: 50% !important;
-  transform: translateY(-50%) !important; /* 垂直居中，不歪 */
-  display: flex !important;
-  align-items: center !important;
-  gap: 10px !important; /* LOGO和文字间距 */
-  z-index: 99 !important; /* 确保在背景图上面，不被遮挡 */
-}
-
-/* LOGO图片保持80×80圆形，和原来一致 */
-.logo-top img {
-  width: 80px !important;
-  height: 80px !important;
-  border-radius: 50% !important;
-  object-fit: cover !important;
-  border: 2px solid #ffffff !important; /* 加白色边框，更醒目 */
-}
-
-/* HJD音乐文字样式（适配背景图，看得清） */
-.logo-top span {
-  font-size: 24px !important;
-  color: #ffffff !important; /* 白色文字 */
-  font-weight: bold !important;
-  text-shadow: 0 0 6px #000000 !important; /* 加黑阴影，防止和背景融合 */
-}
-
-/* 适配手机端（LOGO自动缩小，不挤） */
-@media (max-width: 768px) {
-  .logo-top img {
-    width: 40px !important;
-    height: 40px !important;
-  }
-  .logo-top span {
-    font-size: 16px !important;
-  }
-  .logo-top {
-    left: 10px !important; /* 手机端往左靠一点 */
-  }
 }
