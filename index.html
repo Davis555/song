@@ -7,57 +7,51 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- 顶部横幅 -->
-  <div class="top-full-banner">
-    <div class="logo-top">
-      <img src="image/hdj.png" alt="LOGO">
-      <span>HJD音乐</span>
+
+<div class="top-full-banner">
+  <div class="logo-top">
+    <img src="image/hdj.png" alt="LOGO">
+    <span>HJD音乐</span>
+  </div>
+</div>
+
+<div class="page-wrap">
+  <div class="left-side" id="albumWrap"></div>
+
+  <div class="middle-lyrics">
+    <div class="song-bg" id="songBg">
+      <div class="song-bg-lyrics" id="songBgLyrics"></div>
+    </div>
+    <div class="lyrics-box">
+      <div class="lyrics-text" id="lyricsText"></div>
+    </div>
+    <div class="player-bar">
+      <button class="btn" id="prevBtn">⏮</button>
+      <button class="btn" id="playBtn">▶</button>
+      <button class="btn" id="nextBtn">⏭</button>
+      <input type="range" class="progress" id="progress" min="0" max="100" value="0">
+      <div class="time" id="timeText">00:00 / 00:00</div>
+      <input type="range" id="volume" min="0" max="100" value="100">
+      <div id="volumeText">100%</div>
+      <button class="download-btn" id="downloadBtn">下载</button>
     </div>
   </div>
 
-  <!-- 主体容器 -->
-  <div class="page-wrap">
-    <!-- 左侧专辑列表 -->
-    <div class="left-side" id="albumWrap"></div>
-
-    <!-- 中间歌词/播放区 -->
-    <div class="middle-lyrics">
-      <div class="song-bg" id="songBg">
-        <div class="song-bg-lyrics" id="songBgLyrics"></div>
-      </div>
-      <div class="lyrics-box">
-        <div class="lyrics-text" id="lyricsText">请选择歌曲查看创作故事和歌词</div>
-      </div>
-      <div class="player-bar">
-        <button class="btn" id="prevBtn">⏮</button>
-        <button class="btn" id="playBtn">▶</button>
-        <button class="btn" id="nextBtn">⏭</button>
-        <input type="range" class="progress" id="progress" min="0" max="100" value="0">
-        <div class="time" id="timeText">00:00 / 00:00</div>
-        <div class="volume-group">
-          <input type="range" id="volume" min="0" max="100" value="100">
-          <div id="volumeText">100%</div>
-        </div>
-        <button class="download-btn" id="downloadBtn">下载</button>
-      </div>
+  <div class="right-side">
+    <div class="right-card">
+      <h3>关于作者</h3>
+      <p>专注原创音乐创作，用心传递每一段旋律</p>
     </div>
-
-    <!-- 右侧信息栏 -->
-    <div class="right-side">
-      <div class="right-card">
-        <h3>关于作者</h3>
-        <p>专注原创音乐创作，用心传递每一段旋律，每一首作品都包含独特的情感与故事，希望能与你产生共鸣。</p>
-      </div>
-      <div class="right-card">
-        <h3>最新动态</h3>
-        <p>全新单曲《An Other Way》已上线，融合流行与电子元素，讲述人生选择与自我坚持的创作理念。</p>
-      </div>
-      <div class="right-footer">
-        <p>感谢支持 | 持续更新优质原创音乐</p>
-      </div>
+    <div class="right-card">
+      <h3>最新动态</h3>
+      <p>全新单曲已上线，欢迎聆听</p>
+    </div>
+    <div class="right-footer">
+      <p>感谢支持</p>
     </div>
   </div>
+</div>
 
-  <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
