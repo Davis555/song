@@ -46,12 +46,23 @@ body {
   gap:12px;
   margin-bottom:30px;
 }
-.logo img { border-radius:50%; }
-.logo span { font-size:20px; font-weight:bold; color:#fff; }
-.album-wrap {
-  display:flex;
-  flex-direction:column;
-  gap:14px;
+/* 左上角LOGO 圆形 + 位置微调 */
+.logo-top img {
+  width: 53px;
+  height: 53px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ffffff;
+}
+.logo-top {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 99;
 }
 .album-title {
   font-size:16px;
