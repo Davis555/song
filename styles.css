@@ -264,3 +264,28 @@ body {
   background-position: center !important;
   background-repeat: no-repeat !important;
 }
+/* 歌曲专属黑胶LOGO —— 只有 An Other Way 播放时显示 */
+.vinyl-disc {
+  display: none; /* 默认隐藏 */
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  z-index: 10;
+}
+
+/* 旋转动画 */
+.vinyl-disc.playing {
+  display: block;
+  animation: vinylRotate 8s linear infinite;
+}
+
+@keyframes vinylRotate {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(360deg); }
+}
