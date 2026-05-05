@@ -12,7 +12,7 @@ const volumeText = document.getElementById('volumeText');
 const downloadBtn = document.getElementById('downloadBtn');
 const albumWrap = document.getElementById('albumWrap');
 
-// 原始正确结构，没乱嵌套
+// 数据：只加了 logo，其他和你原来一模一样
 const MUSIC_DATA = {
   albums: [
     {
@@ -48,31 +48,23 @@ let allSongs = [];
 let currentIndex = 0;
 let lyrics = [];
 
-// 修复版SRT解析，解决歌词时间错位
 function parseSRT(text) {
   const lines = text.trim().split('\n');
   let res = [];
   for(let i = 0; i < lines.length; i++){
     let line = lines[i].trim();
     if(!line.match(/\d{2}:\d{2}:\d{2}/)) continue;
-    
-    // 时间轴正则精准匹配
     let timeReg = /(\d{2}):(\d{2}):(\d{2}),(\d{3})/;
     let match = line.match(timeReg);
     if(!match) continue;
-
-       let startTime = Number(match[1]) * 3600 + Number(match[2]) * 60 + Number(match[3]) + Number(match[4]) / 1000;
-    
-    // 取下一行作为歌词
+    let startTime = Number(match[1])*3600 + Number(match[2])*60 + Number(match[3]) + Number(match[4])/1000;
     let lyric = '';
     if(i+1 < lines.length) lyric = lines[++i].trim();
-    
     res.push({start: startTime, text: lyric});
   }
   return res;
 }
 
-// 精准歌词同步，修复错位
 function syncLyrics() {
   let now = audio.currentTime;
   let showText = "";
@@ -84,7 +76,7 @@ function syncLyrics() {
   bgLyrics.innerText = showText;
 }
 
-// 渲染左侧专辑歌单（保持你原来正常逻辑）
+// 渲染歌单（和你原来完全一样，没动）
 function renderDesktopAlbums(){
   albumWrap.innerHTML = '';
   const root = document.createElement('div');
@@ -94,7 +86,6 @@ function renderDesktopAlbums(){
 
   MUSIC_DATA.albums.forEach(al=>{
     let wrap = document.createElement('div');
-    
     let titleDom = document.createElement('div');
     titleDom.className = 'album-title';
     titleDom.textContent = al.name;
@@ -117,11 +108,10 @@ function renderDesktopAlbums(){
   });
 }
 
-// 播放歌曲：只加创作故事，不动歌词逻辑
+// 播放歌曲：加了黑胶切换，别的不动
 async function playSong(song) {
   songBg.style.backgroundImage = `url(${song.bg})`;
   bgLyrics.innerText = '';
-  // 右侧创作背景显示歌曲故事
   lyricsText.innerText = song.story || "暂无创作故事";
 
   lyrics = [];
@@ -140,15 +130,15 @@ async function playSong(song) {
   audio.play().catch(err=>console.log(err));
   playBtn.textContent = '⏸';
 
-  // 黑胶LOGO自动切换 + 开始旋转
+  // 黑胶切换
   let vinyl = document.getElementById("vinylDisc");
-  if(vinyl) {
+  if(vinyl){
     vinyl.src = song.logo;
     vinyl.classList.add("playing");
   }
 }
 
-// 播放暂停
+// 播放/暂停
 playBtn.onclick = function(){
   if(audio.paused){
     audio.play();
@@ -163,36 +153,29 @@ playBtn.onclick = function(){
   }
 };
 
-// 时间更新 + 歌词同步
+// 时间更新
 audio.ontimeupdate = function(){
   if(!audio.duration) return;
-  // 进度条
   progress.value = audio.currentTime / audio.duration * 100;
-  // 时间格式化
   let curM = Math.floor(audio.currentTime / 60);
   let curS = Math.floor(audio.currentTime % 60);
   let durM = Math.floor(audio.duration / 60);
   let durS = Math.floor(audio.duration % 60);
   timeText.textContent = 
     `${String(curM).padStart(2,'0')}:${String(curS).padStart(2,'0')} / ${String(durM).padStart(2,'0')}:${String(durS).padStart(2,'0')}`;
-  
-  // 歌词同步
   syncLyrics();
 };
 
-// 拖动进度
 progress.oninput = function(){
   if(!audio.duration) return;
   audio.currentTime = progress.value / 100 * audio.duration;
 };
 
-// 音量
 volume.oninput = function(){
   audio.volume = volume.value / 100;
   volumeText.textContent = volume.value + '%';
 };
 
-// 下载
 downloadBtn.onclick = function(){
   let a = document.createElement('a');
   a.href = audio.src;
@@ -209,9 +192,7 @@ audio.onended = () => {
   if(vinyl) vinyl.classList.remove("playing");
 };
 
-// 初始化
+// 初始化：只留一次！
 renderDesktopAlbums();
 volumeText.textContent = volume.value + '%';
-
-// 默认显示背景图
 songBg.style.backgroundImage = "url('image/bg.png')";
