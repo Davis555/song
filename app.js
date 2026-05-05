@@ -1,4 +1,4 @@
-const audio = document.getElementById('audio');
+const audio = new Audio();
 const songBg = document.getElementById('songBg');
 const lyricsText = document.getElementById('lyricsText');
 const bgLyrics = document.getElementById('songBgLyrics');
@@ -47,38 +47,31 @@ let lyrics = [];
 function parseSRT(text) {
   const lines = text.trim().split('\n');
   let res = [];
-  for(let i = 0; i < lines.length; i++){
+  for(let i=0;i<lines.length;i++){
     let line = lines[i].trim();
     if(!line.match(/\d{2}:\d{2}:\d{2}/)) continue;
     let timeReg = /(\d{2}):(\d{2}):(\d{2}),(\d{3})/;
     let match = line.match(timeReg);
     if(!match) continue;
-    let startTime = Number(match[1])*3600 + Number(match[2])*60 + Number(match[3]) + Number(match[4])/1000;
+    let start = Number(match[1])*3600 + Number(match[2])*60 + Number(match[3]) + Number(match[4])/1000;
     let lyric = '';
-    if(i+1 < lines.length) lyric = lines[++i].trim();
-    res.push({start: startTime, text: lyric});
+    if(i+1<lines.length) lyric = lines[++i].trim();
+    res.push({start, text: lyric});
   }
   return res;
 }
 
 function syncLyrics() {
   let now = audio.currentTime;
-  let showText = "";
-  for(let i = 0; i < lyrics.length; i++){
-    if(now >= lyrics[i].start){
-      showText = lyrics[i].text;
-    }
+  let txt = "";
+  for(let i=0;i<lyrics.length;i++){
+    if(now >= lyrics[i].start) txt = lyrics[i].text;
   }
-  bgLyrics.innerText = showText;
+  bgLyrics.innerText = txt;
 }
 
 function renderDesktopAlbums(){
   albumWrap.innerHTML = '';
-  const root = document.createElement('div');
-  root.className = 'album-title';
-  root.textContent = 'Album';
-  albumWrap.appendChild(root);
-
   MUSIC_DATA.albums.forEach(al=>{
     let wrap = document.createElement('div');
     let titleDom = document.createElement('div');
@@ -97,7 +90,6 @@ function renderDesktopAlbums(){
       listDom.appendChild(item);
       allSongs.push(s);
     });
-
     wrap.appendChild(listDom);
     albumWrap.appendChild(wrap);
   });
@@ -106,69 +98,61 @@ function renderDesktopAlbums(){
 async function playSong(song) {
   songBg.style.backgroundImage = `url(${song.bg})`;
   bgLyrics.innerText = '';
-  lyricsText.innerText = song.story || "暂无创作故事";
-
+  lyricsText.innerText = song.story || '';
   lyrics = [];
+
   if(song.srt){
-    try{
+    try {
       let r = await fetch(song.srt);
       let t = await r.text();
       lyrics = parseSRT(t);
-    }catch(e){
-      console.log("歌词加载失败",e);
-    }
+    } catch(e) {}
   }
 
   audio.src = song.url;
   await audio.load();
-  audio.play().catch(err=>console.log(err));
+  audio.play();
   playBtn.textContent = '⏸';
 }
 
-playBtn.onclick = function(){
+playBtn.onclick = () => {
   if(audio.paused){
     audio.play();
     playBtn.textContent = '⏸';
-  }else{
+  } else {
     audio.pause();
     playBtn.textContent = '▶';
   }
 };
 
-audio.ontimeupdate = function(){
+audio.ontimeupdate = () => {
   if(!audio.duration) return;
   progress.value = audio.currentTime / audio.duration * 100;
-  let curM = Math.floor(audio.currentTime / 60);
-  let curS = Math.floor(audio.currentTime % 60);
-  let durM = Math.floor(audio.duration / 60);
-  let durS = Math.floor(audio.duration % 60);
-  timeText.textContent = `${String(curM).padStart(2,'0')}:${String(curS).padStart(2,'0')} / ${String(durM).padStart(2,'0')}:${String(durS).padStart(2,'0')}`;
+  let cm = Math.floor(audio.currentTime/60), cs = Math.floor(audio.currentTime%60);
+  let dm = Math.floor(audio.duration/60), ds = Math.floor(audio.duration%60);
+  timeText.textContent = `${String(cm).padStart(2,'0')}:${String(cs).padStart(2,'0')} / ${String(dm).padStart(2,'0')}:${String(ds).padStart(2,'0')}`;
   syncLyrics();
 };
 
-progress.oninput = function(){
-  if(!audio.duration) return;
-  audio.currentTime = progress.value / 100 * audio.duration;
+progress.oninput = () => {
+  if(audio.duration) audio.currentTime = progress.value / 100 * audio.duration;
 };
 
-volume.oninput = function(){
+volume.oninput = () => {
   audio.volume = volume.value / 100;
   volumeText.textContent = volume.value + '%';
 };
 
-downloadBtn.onclick = function(){
+downloadBtn.onclick = () => {
   let a = document.createElement('a');
   a.href = audio.src;
-  a.download = "歌曲.mp3";
+  a.download = "song.mp3";
   a.click();
 };
 
-prevBtn.onclick = () => audio.currentTime = 0;
-nextBtn.onclick = () => audio.currentTime = 0;
-
-audio.onended = () => {
-  playBtn.textContent = '▶';
-};
+prevBtn.onclick = () => { audio.currentTime = 0; };
+nextBtn.onclick = () => { audio.currentTime = 0; };
+audio.onended = () => { playBtn.textContent = '▶'; };
 
 renderDesktopAlbums();
 volumeText.textContent = volume.value + '%';
