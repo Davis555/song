@@ -1,62 +1,88 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<title>HJD音乐</title>
-<link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HJD音乐作品</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
+<!-- 顶部背景图（手机高度自动变小） -->
 <div class="top-full-banner">
+  <!-- 新增LOGO+文字容器 -->
   <div class="logo-top">
-    <img src="image/hdj.png" alt="HJD音乐">
+    <img src="image/hdj.png" alt="LOGO">
     <span>HJD音乐</span>
   </div>
 </div>
 
+<!-- 手机顶部菜单：关于作者 / 最新动态 -->
+<div class="mobile-top-menu">
+  <div class="mo-menu-item" onclick="toggleMoPanel('author')">关于作者</div>
+  <div class="mo-menu-item" onclick="toggleMoPanel('news')">最新动态</div>
+</div>
+
+<!-- 下拉面板 -->
+<div class="mo-panel" id="authorPanel">
+  <p>独立音乐制作人，专注旋律创作、编曲与混音。</p>
+</div>
+<div class="mo-panel" id="newsPanel">
+  <p>2025全新专辑制作中</p>
+  <p>感谢每一位听众支持</p>
+</div>
+
+<!-- 横向专辑栏 -->
+<div class="album-scroll-wrap">
+  <div class="album-scroll" id="albumScroll"></div>
+</div>
+
+<!-- 歌曲列表 -->
+<div class="song-list-panel" id="songListPanel"></div>
+
+<!-- 中间内容 -->
 <div class="page-wrap">
   <aside class="left-side">
     <div class="album-wrap" id="albumWrap"></div>
   </aside>
 
-  <div class="middle-lyrics">
+  <main class="middle-lyrics">
     <div class="song-bg" id="songBg">
-      <!-- 中间旋转黑胶LOGO -->
-      <img src="image/hdj.png" class="vinyl-disc" id="vinylDisc">
-      <div class="song-bg-lyrics" id="songBgLyrics"></div>
+      <div class="song-bg-lyrics" id="bgLyrics"></div>
     </div>
-
-    <div class="lyrics-box">
-      <div class="lyrics-text" id="lyricsText">欢迎使用HJD音乐播放器</div>
-    </div>
-
-    <div class="player-bar">
+      <div class="player-bar">
       <button class="btn" id="prevBtn">⏮</button>
       <button class="btn" id="playBtn">▶</button>
       <button class="btn" id="nextBtn">⏭</button>
       <input type="range" class="progress" id="progress" value="0">
-      <div class="time" id="timeText">00:00 / 00:00</div>
-      <div class="volume-group">
-        <input type="range" id="volume" min="0" max="100" value="100">
-        <div id="volumeText">100%</div>
-      </div>
+      <span class="time" id="timeText">00:00 / 00:00</span>
       <button class="download-btn" id="downloadBtn">下载</button>
+      <div class="volume-group">
+        <input type="range" id="volume" value="80" min="0" max="100">
+        <span id="volumeText">80%</span>
+      </div>
     </div>
-  </div>
+  </main>
 
   <aside class="right-side">
-    <div class="right-card">
-      <h3>关于作者</h3>
-      <p>HJD音乐，专注Fusion/轻音乐创作</p>
-    </div>
-    <div class="right-card">
-      <h3>最新动态</h3>
-      <p>新增单曲《AnOtherWay》</p>
-    </div>
-  </aside>
-</div>
+  <div class="right-card">
+    <h3>关于作者</h3>
+    <p>独立音乐制作人，专注旋律创作、编曲与混音。</p>
+  </div>
+  <div class="right-card">
+    <h3>最新动态</h3>
+    <p>2025全新专辑制作中</p>
+  </div>
+  <div class="right-footer">
+    <p>感谢支持</p>
+    <img src="https://picsum.photos/seed/qrcode/120/120" alt="赞赏码">
+  </div>
+  <div class="right-card" style="display:none;">
+  <div id="lyricsText"></div>
+  </div>  
+</aside>
 
 <audio id="audio"></audio>
-<script src="script.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
