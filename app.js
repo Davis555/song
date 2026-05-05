@@ -1,7 +1,7 @@
 const audio = document.getElementById('audio');
 const songBg = document.getElementById('songBg');
 const lyricsText = document.getElementById('lyricsText');
-const bgLyrics = document.getElementById('bgLyrics');
+const bgLyrics = document.getElementById('songBgLyrics');
 const playBtn = document.getElementById('playBtn');
 const prevBtn = document.getElementById('prevBtn');
 const nextBtn = document.getElementById('nextBtn');
@@ -12,7 +12,6 @@ const volumeText = document.getElementById('volumeText');
 const downloadBtn = document.getElementById('downloadBtn');
 const albumWrap = document.getElementById('albumWrap');
 
-// 原始数据，只加 logo 字段，其余完全不变
 const MUSIC_DATA = {
   albums: [
     {
@@ -21,7 +20,6 @@ const MUSIC_DATA = {
         {
           title: "Rain Night",
           bg: "image/Cover2.png",
-          logo: "image/hdj.png",
           url: "audio/Rain Night.mp3",
           srt: "",
           story: "《Rain Night》创作于雨夜，氛围安静治愈。"
@@ -34,7 +32,6 @@ const MUSIC_DATA = {
         {
           title: "An Other Way",
           bg: "image/Cover1.png",
-          logo: "image/AnOtherWay_logo.png",
           url: "audio/An Other Way.mp3",
           srt: "lyric/AnOtherWay.srt",
           story: "讲述人生选择与自我坚持的创作理念。"
@@ -45,7 +42,6 @@ const MUSIC_DATA = {
 };
 
 let allSongs = [];
-let currentIndex = 0;
 let lyrics = [];
 
 function parseSRT(text) {
@@ -76,7 +72,9 @@ function syncLyrics() {
   bgLyrics.innerText = showText;
 }
 
-// 完全原样，不动
+// ==========================
+// 列表渲染 100% 正常
+// ==========================
 function renderDesktopAlbums(){
   albumWrap.innerHTML = '';
   const root = document.createElement('div');
@@ -108,7 +106,6 @@ function renderDesktopAlbums(){
   });
 }
 
-// 只加4行黑胶代码，其余完全不动
 async function playSong(song) {
   songBg.style.backgroundImage = `url(${song.bg})`;
   bgLyrics.innerText = '';
@@ -129,16 +126,8 @@ async function playSong(song) {
   await audio.load();
   audio.play().catch(err=>console.log(err));
   playBtn.textContent = '⏸';
-
-  // ↓↓↓↓ 只加这4行 ↓↓↓↓
-  let vinyl = document.getElementById("vinylDisc");
-  if (vinyl) {
-    vinyl.src = song.logo;
-    vinyl.classList.add("playing");
-  }
 }
 
-// 完全原样
 playBtn.onclick = function(){
   if(audio.paused){
     audio.play();
@@ -184,7 +173,7 @@ audio.onended = () => {
   playBtn.textContent = '▶';
 };
 
-// 初始化完全原样
+// 初始化
 renderDesktopAlbums();
 volumeText.textContent = volume.value + '%';
 songBg.style.backgroundImage = "url('image/bg.png')";
