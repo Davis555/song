@@ -46,23 +46,23 @@ body {
   gap:12px;
   margin-bottom:30px;
 }
-/* 左上角LOGO 圆形 + 位置微调 */
-.logo-top img {
-  width: 53px;
-  height: 53px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #ffffff;
-}
+/* 顶部 LOGO：居中 + 圆形 */
 .logo-top {
   position: absolute;
-  left: 20px;
-  top: 50%;
-  transform: translateY(-50%);
+  left: 50%;         /* 水平居中 */
+  top: 50%;          /* 垂直居中 */
+  transform: translate(-50%, -50%); /* 完全居中 */
   display: flex;
   align-items: center;
   gap: 10px;
   z-index: 99;
+}
+.logo-top img {
+  width: 53px;
+  height: 53px;
+  border-radius: 50%;  /* 保留圆形 */
+  object-fit: cover;
+  border: 2px solid #fff;
 }
 .album-title {
   font-size:16px;
