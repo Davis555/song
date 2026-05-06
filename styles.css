@@ -83,23 +83,42 @@ body {
   gap:20px;
   background:#111;
 }
-/* 容器设置：依然是保证尺寸和边框 */
+/* 1. 容器设置：决定画幅的比例和边界 */
 .song-bg {
   width: 100%;
   max-width: 1000px;
   aspect-ratio: 16/9;
   border-radius: 12px;
+  position: relative;
   overflow: hidden; 
   background-color: #222; 
   
-  /* === 核心改变：使用 background-image 替代 <img> 标签 === */
-  /* 注意：如果通过 HTML 传入了背景图，这里可以省略，或者使用下面的语法强制它 */
-  background-size: cover; /* 保持覆盖，不变形 */
-  background-position: center; /* 居中 */
-  background-repeat: no-repeat; /* 不重复 */
+  /* =============================================== */
+  /* 核心修复：使用背景图属性来控制背景图片 */
+  /* 请将 'your-actual-image.jpg' 替换为您的图片 URL */
+  background-image: url('your-actual-image.jpg'); 
+  
+  /* 关键修复属性：保证不变形、覆盖，并保持居中 */
+  background-size: cover; 
+  background-position: center;
+  background-repeat: no-repeat;
+  /* =============================================== */
 }
 
-/* 此时，.song-bg img 的样式已经全部无效，无需编写了。 */
+/* 2. 歌词容器设置：确保歌词内容能够浮动在背景图之上 */
+.song-bg-lyrics {
+  /* 确保内容与背景图处于同一层，但内容依然可读 */
+  position: absolute; 
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* 必须给歌词内容一个合适的颜色，确保在深色背景上可见 */
+  color: white; 
+  /* 文本居中等其他排版样式可以放在这里 */
+  z-index: 10; /* 确保歌词高于背景 */
+}
+
 
 .song-bg-lyrics {
   position:absolute;
