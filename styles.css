@@ -83,22 +83,24 @@ body {
   gap:20px;
   background:#111;
 }
+/* 容器设置：依然是保证尺寸和边框 */
 .song-bg {
   width: 100%;
   max-width: 1000px;
   aspect-ratio: 16/9;
   border-radius: 12px;
-  position: relative;
-  overflow: hidden; /* 关键：超出部分隐藏 */
-  background-color: #222;
+  overflow: hidden; 
+  background-color: #222; 
+  
+  /* === 核心改变：使用 background-image 替代 <img> 标签 === */
+  /* 注意：如果通过 HTML 传入了背景图，这里可以省略，或者使用下面的语法强制它 */
+  background-size: cover; /* 保持覆盖，不变形 */
+  background-position: center; /* 居中 */
+  background-repeat: no-repeat; /* 不重复 */
 }
 
-.song-bg img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover; /* 关键：不变形，自动裁切多余部分 */
-  object-position: center; /* 居中裁切 */
-}
+/* 此时，.song-bg img 的样式已经全部无效，无需编写了。 */
+
 .song-bg-lyrics {
   position:absolute;
   bottom:0;
