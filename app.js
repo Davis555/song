@@ -1,7 +1,9 @@
+// ======================== DOM 元素 ========================
 const audio = document.getElementById('audio');
 const songBg = document.getElementById('songBg');
-const lyricsText = document.getElementById('lyricsText');
 const bgLyrics = document.getElementById('bgLyrics');
+const lyricsText = document.getElementById('lyricsText');
+const lyricsBox = document.getElementById('lyricsBox');
 const playBtn = document.getElementById('playBtn');
 const prevBtn = document.getElementById('prevBtn');
 const nextBtn = document.getElementById('nextBtn');
@@ -11,32 +13,22 @@ const volume = document.getElementById('volume');
 const volumeText = document.getElementById('volumeText');
 const downloadBtn = document.getElementById('downloadBtn');
 const albumWrap = document.getElementById('albumWrap');
+const albumScroll = document.getElementById('albumScroll');
+const songListPanel = document.getElementById('songListPanel');
 
-// 原始正确结构，没乱嵌套
+// ======================== 音乐数据 ========================
 const MUSIC_DATA = {
   albums: [
     {
       name: "Instrument",
       songs: [
-        {
-          title: "Rain Night",
-          bg: "image/Cover2.png",
-          url: "audio/Rain Night.mp3",
-          srt: "",
-          story: "《Rain Night》创作于雨夜，氛围安静治愈。"
-        }
+        { title: "Rain Night", bg: "image/Cover2.png", url: "audio/Rain Night.mp3", srt: "", story: "《Rain Night》创作于雨夜，氛围安静治愈。" }
       ]
     },
     {
       name: "POP Song",
       songs: [
-        {
-          title: "An Other Way",
-          bg: "image/Cover1.png",
-          url: "audio/An Other Way.mp3",
-          srt: "lyric/AnOtherWay.srt",
-          story: "讲述人生选择与自我坚持的创作理念。"
-        }
+        { title: "An Other Way", bg: "image/Cover1.png", url: "audio/An Other Way.mp3", srt: "lyric/AnOtherWay.srt", story: "讲述人生选择与自我坚持的创作理念。" }
       ]
     }
   ]
@@ -46,157 +38,200 @@ let allSongs = [];
 let currentIndex = 0;
 let lyrics = [];
 
-// 修复版SRT解析，解决歌词时间错位
+// ======================== 工具函数 ========================
+function formatTime(sec) {
+  const m = Math.floor(sec / 60);
+  const s = Math.floor(sec % 60);
+  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+}
+
+function toggleMoPanel(type) {
+  document.getElementById(type + 'Panel').classList.toggle('active');
+}
+
+// ======================== 歌词解析 ========================
 function parseSRT(text) {
   const lines = text.trim().split('\n');
   let res = [];
-  for(let i = 0; i < lines.length; i++){
+  for (let i = 0; i < lines.length; i++) {
     let line = lines[i].trim();
-    if(!line.match(/\d{2}:\d{2}:\d{2}/)) continue;
-    
-    // 时间轴正则精准匹配
+    if (!line.match(/\d{2}:\d{2}:\d{2}/)) continue;
     let timeReg = /(\d{2}):(\d{2}):(\d{2}),(\d{3})/;
     let match = line.match(timeReg);
-    if(!match) continue;
-
-       let startTime = Number(match[1]) * 3600 + Number(match[2]) * 60 + Number(match[3]) + Number(match[4]) / 1000;
-    
-    // 取下一行作为歌词
+    if (!match) continue;
+    let startTime = Number(match[1]) * 3600 + Number(match[2]) * 60 + Number(match[3]) + Number(match[4]) / 1000;
     let lyric = '';
-    if(i+1 < lines.length) lyric = lines[++i].trim();
-    
-    res.push({start: startTime, text: lyric});
+    if (i + 1 < lines.length) lyric = lines[++i].trim();
+    res.push({ start: startTime, text: lyric });
   }
   return res;
 }
 
-// 精准歌词同步，修复错位
 function syncLyrics() {
+  if (lyrics.length === 0) return;
   let now = audio.currentTime;
   let showText = "";
-  for(let i = 0; i < lyrics.length; i++){
-    if(now >= lyrics[i].start){
-      showText = lyrics[i].text;
-    }
+  for (let i = 0; i < lyrics.length; i++) {
+    if (now >= lyrics[i].start) showText = lyrics[i].text;
   }
   bgLyrics.innerText = showText;
 }
 
-// 渲染左侧专辑歌单（保持你原来正常逻辑）
-function renderDesktopAlbums(){
-  albumWrap.innerHTML = '';
-  const root = document.createElement('div');
-  root.className = 'album-title';
-  root.textContent = 'Album';
-  albumWrap.appendChild(root);
+// ======================== 渲染函数 ========================
+// 扁平化歌曲列表
+function buildSongList() {
+  allSongs = [];
+  MUSIC_DATA.albums.forEach(al => al.songs.forEach(s => allSongs.push(s)));
+}
 
-  MUSIC_DATA.albums.forEach(al=>{
+// 电脑端专辑渲染
+function renderDesktopAlbums() {
+  albumWrap.innerHTML = '';
+  const titleDom = document.createElement('div');
+  titleDom.className = 'album-title';
+  titleDom.textContent = 'Album';
+  albumWrap.appendChild(titleDom);
+
+  MUSIC_DATA.albums.forEach(al => {
     let wrap = document.createElement('div');
-    
-    let titleDom = document.createElement('div');
-    titleDom.className = 'album-title';
-    titleDom.textContent = al.name;
-    wrap.appendChild(titleDom);
+    let albumTitle = document.createElement('div');
+    albumTitle.className = 'album-title';
+    albumTitle.textContent = al.name;
+    wrap.appendChild(albumTitle);
 
     let listDom = document.createElement('div');
     listDom.className = 'song-list';
-
-    al.songs.forEach(s=>{
+    al.songs.forEach(s => {
       let item = document.createElement('div');
       item.className = 'song-item';
       item.textContent = s.title;
-      item.onclick = ()=>playSong(s);
+      item.onclick = () => playSong(s);
       listDom.appendChild(item);
-      allSongs.push(s);
     });
-
     wrap.appendChild(listDom);
     albumWrap.appendChild(wrap);
   });
 }
 
-// 播放歌曲：只加创作故事，不动歌词逻辑
-async function playSong(song) {
-  songBg.style.backgroundImage = `url(${song.bg})`;
-  bgLyrics.innerText = '';
-  // 右侧创作背景显示歌曲故事
-  lyricsText.innerText = song.story || "暂无创作故事";
-
-  lyrics = [];
-  if(song.srt){
-    try{
-      let r = await fetch(song.srt);
-      let t = await r.text();
-      lyrics = parseSRT(t);
-    }catch(e){
-      console.log("歌词加载失败",e);
-    }
-  }
-
-  audio.src = song.url;
-  await audio.load();
-  audio.play().catch(err=>console.log(err));
-  playBtn.textContent = '⏸';
+// 手机端专辑横向滚动渲染
+function renderMobileAlbums() {
+  albumScroll.innerHTML = '';
+  MUSIC_DATA.albums.forEach((al, idx) => {
+    let card = document.createElement('div');
+    card.className = 'album-card';
+    // 使用专辑第一首歌的封面作为专辑封面，若无则用默认色
+    let coverUrl = al.songs[0]?.bg || 'image/default_album.png';
+    card.innerHTML = `<img src="${coverUrl}" alt="${al.name}" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjMjIyIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZpbGw9IiM4ODgiIGZvbnQtc2l6ZT0iMTIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5BbGJ1bTwvdGV4dD48L3N2Zz4='">`;
+    card.innerHTML += `<span>${al.name}</span>`;
+    card.onclick = () => {
+      if (al.songs.length > 0) playSong(al.songs[0]);
+    };
+    albumScroll.appendChild(card);
+  });
 }
 
-// 播放暂停
-playBtn.onclick = function(){
-  if(audio.paused){
-    audio.play();
-    playBtn.textContent = '⏸';
-  }else{
-    audio.pause();
-    playBtn.textContent = '▶';
+// 手机端歌曲列表渲染
+function renderMobileSongs() {
+  songListPanel.innerHTML = '';
+  allSongs.forEach(s => {
+    let item = document.createElement('div');
+    item.className = 'song-item';
+    item.textContent = s.title;
+    item.onclick = () => playSong(s);
+    songListPanel.appendChild(item);
+  });
+}
+
+// ======================== 播放控制 ========================
+function playSong(song) {
+  const songIndex = allSongs.findIndex(s => s.url === song.url);
+  if (songIndex !== -1) currentIndex = songIndex;
+
+  // 更新UI状态
+  songBg.style.backgroundImage = `url('${song.bg}')`;
+  bgLyrics.innerText = '';
+  lyricsText.innerText = song.story || "暂无创作故事";
+  
+  // 清除并加载歌词
+  lyrics = [];
+  if (song.srt) {
+    fetch(song.srt)
+      .then(r => r.text())
+      .then(t => { lyrics = parseSRT(t); })
+      .catch(e => console.warn("歌词加载失败或无权限:", e));
   }
+
+  // 设置音频并播放
+  audio.src = song.url;
+  audio.load();
+  audio.play().catch(err => console.log("自动播放被浏览器拦截，请手动点击播放:", err));
+  playBtn.textContent = '⏸';
+  progress.value = 0;
+}
+
+function updatePlayBtn(paused) {
+  playBtn.textContent = paused ? '▶' : '⏸';
+}
+
+// 事件绑定
+playBtn.onclick = () => {
+  if (audio.paused) { audio.play(); updatePlayBtn(false); }
+  else { audio.pause(); updatePlayBtn(true); }
 };
 
-// 时间更新 + 歌词同步
-audio.ontimeupdate = function(){
-  if(!audio.duration) return;
-  // 进度条
-  progress.value = audio.currentTime / audio.duration * 100;
-  // 时间格式化
-  let curM = Math.floor(audio.currentTime / 60);
-  let curS = Math.floor(audio.currentTime % 60);
-  let durM = Math.floor(audio.duration / 60);
-  let durS = Math.floor(audio.duration % 60);
-  timeText.textContent = 
-    `${String(curM).padStart(2,'0')}:${String(curS).padStart(2,'0')} / ${String(durM).padStart(2,'0')}:${String(durS).padStart(2,'0')}`;
-  
-  // 歌词同步
+prevBtn.onclick = () => {
+  currentIndex = (currentIndex - 1 + allSongs.length) % allSongs.length;
+  playSong(allSongs[currentIndex]);
+};
+
+nextBtn.onclick = () => {
+  currentIndex = (currentIndex + 1) % allSongs.length;
+  playSong(allSongs[currentIndex]);
+};
+
+audio.ontimeupdate = () => {
+  if (!audio.duration) return;
+  progress.value = (audio.currentTime / audio.duration) * 100;
+  timeText.textContent = `${formatTime(audio.currentTime)} / ${formatTime(audio.duration)}`;
   syncLyrics();
 };
 
-// 拖动进度
-progress.oninput = function(){
-  if(!audio.duration) return;
-  audio.currentTime = progress.value / 100 * audio.duration;
+progress.oninput = () => {
+  if (!audio.duration) return;
+  audio.currentTime = (progress.value / 100) * audio.duration;
 };
 
-// 音量
-volume.oninput = function(){
+volume.oninput = () => {
   audio.volume = volume.value / 100;
   volumeText.textContent = volume.value + '%';
 };
 
-// 下载
-downloadBtn.onclick = function(){
+downloadBtn.onclick = () => {
+  if (!audio.src) return;
   let a = document.createElement('a');
   a.href = audio.src;
-  a.download = "歌曲.mp3";
+  a.download = allSongs[currentIndex]?.title + '.mp3' || 'music.mp3';
   a.click();
 };
 
-prevBtn.onclick = () => audio.currentTime = 0;
-nextBtn.onclick = () => audio.currentTime = 0;
-audio.onended = () => playBtn.textContent = '▶';
+audio.onended = () => updatePlayBtn(true);
+audio.onerror = () => console.error("音频加载失败，请检查路径是否正确");
 
-// 初始化
-renderDesktopAlbums();
-volumeText.textContent = volume.value + '%';
+// ======================== 初始化 ========================
+function init() {
+  buildSongList();
+  renderDesktopAlbums();
+  renderMobileAlbums();
+  renderMobileSongs();
+  
+  // 默认背景
+  songBg.style.backgroundImage = "url('image/bg.png')";
+  volumeText.textContent = volume.value + '%';
+  
+  // 移动端首次交互解锁音频上下文（部分手机浏览器限制）
+  document.addEventListener('touchstart', () => {
+    if (audio.paused) audio.play().then(() => audio.pause());
+  }, { once: true });
+}
 
-// 默认显示背景图
-songBg.style.backgroundImage = "url('image/bg.png')";
-
-renderDesktopAlbums();
-volumeText.textContent = volume.value + '%';
+init();
