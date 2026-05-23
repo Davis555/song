@@ -2,28 +2,27 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>HJD音乐作品</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<!-- 顶部背景图（手机高度自动变小） -->
+<!-- 顶部背景图 -->
 <div class="top-full-banner">
-  <!-- 新增LOGO+文字容器 -->
   <div class="logo-top">
     <img src="image/hdj.png" alt="LOGO">
     <span>HJD音乐</span>
   </div>
 </div>
 
-<!-- 手机顶部菜单：关于作者 / 最新动态 -->
+<!-- 手机顶部菜单 -->
 <div class="mobile-top-menu">
   <div class="mo-menu-item" onclick="toggleMoPanel('author')">关于作者</div>
   <div class="mo-menu-item" onclick="toggleMoPanel('news')">最新动态</div>
 </div>
 
-<!-- 下拉面板 -->
+<!-- 手机下拉面板 -->
 <div class="mo-panel" id="authorPanel">
   <p>独立音乐制作人，专注旋律创作、编曲与混音。</p>
 </div>
@@ -32,15 +31,15 @@
   <p>感谢每一位听众支持</p>
 </div>
 
-<!-- 横向专辑栏 -->
+<!-- 手机端：横向专辑栏 -->
 <div class="album-scroll-wrap">
   <div class="album-scroll" id="albumScroll"></div>
 </div>
 
-<!-- 歌曲列表 -->
+<!-- 手机端：歌曲列表 -->
 <div class="song-list-panel" id="songListPanel"></div>
 
-<!-- 中间内容 -->
+<!-- 电脑端主体布局 -->
 <div class="page-wrap">
   <aside class="left-side">
     <div class="album-wrap" id="albumWrap"></div>
@@ -50,11 +49,14 @@
     <div class="song-bg" id="songBg">
       <div class="song-bg-lyrics" id="bgLyrics"></div>
     </div>
-      <div class="player-bar">
+    <div class="lyrics-box" id="lyricsBox">
+      <div class="lyrics-text" id="lyricsText"></div>
+    </div>
+    <div class="player-bar">
       <button class="btn" id="prevBtn">⏮</button>
       <button class="btn" id="playBtn">▶</button>
       <button class="btn" id="nextBtn">⏭</button>
-      <input type="range" class="progress" id="progress" value="0">
+      <input type="range" class="progress" id="progress" value="0" min="0" max="100">
       <span class="time" id="timeText">00:00 / 00:00</span>
       <button class="download-btn" id="downloadBtn">下载</button>
       <div class="volume-group">
@@ -65,24 +67,22 @@
   </main>
 
   <aside class="right-side">
-  <div class="right-card">
-    <h3>关于作者</h3>
-    <p>独立音乐制作人，专注旋律创作、编曲与混音。</p>
-  </div>
-  <div class="right-card">
-    <h3>最新动态</h3>
-    <p>2025全新专辑制作中</p>
-  </div>
-  <div class="right-footer">
-    <p>感谢支持</p>
-    <img src="https://picsum.photos/seed/qrcode/120/120" alt="赞赏码">
-  </div>
-  <div class="right-card" style="display:none;">
-  <div id="lyricsText"></div>
-  </div>  
-</aside>
+    <div class="right-card">
+      <h3>关于作者</h3>
+      <p>独立音乐制作人，专注旋律创作、编曲与混音。</p>
+    </div>
+    <div class="right-card">
+      <h3>最新动态</h3>
+      <p>2025全新专辑制作中</p>
+    </div>
+    <div class="right-footer">
+      <p>感谢支持</p>
+      <img src="https://picsum.photos/seed/qrcode/120/120" alt="赞赏码">
+    </div>
+  </aside>
+</div>
 
-<audio id="audio"></audio>
+<audio id="audio" preload="auto"></audio>
 <script src="app.js"></script>
 </body>
 </html>
